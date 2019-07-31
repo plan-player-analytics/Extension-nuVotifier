@@ -22,32 +22,45 @@
 */
 package com.djrapitops.extension;
 
-import com.djrapitops.plan.extension.DataExtension;
-import com.djrapitops.plan.extension.extractor.ExtensionExtractor;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
-/**
- * Test for the implementation of the new extension
- *
- * @author Rsl1122
- */
-class ExtensionImplementationTest {
+import java.util.concurrent.ExecutionException;
 
-    private ExtensionExtractor extractor;
+public class BukkitVoteListener implements Listener {
 
-    @BeforeEach
-    void prepareExtractor() {
-        DataExtension extension = new NuVotifierExtension(null) {
-        };
-        extractor = new ExtensionExtractor(extension);
+    private final NuVotifierStorage storage;
+
+    private final Plugin plugin;
+
+    BukkitVoteListener(
+            NuVotifierStorage storage
+    ) {
+        this.storage = storage;
+        plugin = Bukkit.getPluginManager().getPlugin("Plan");
     }
 
-    @Test
-    @DisplayName("API is implemented correctly")
-    void noImplementationErrors() {
-        extractor.validateAnnotations();
+    public void register() {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onVote(VotifierEvent event) {
+        Vote vote = event.getVote();
+        String service = vote.getServiceName();
+        String username = vote.getUsername();
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                storage.storeVote(username, service);
+            } catch (ExecutionException ignored) {
+                // Ignore
+            }
+        });
+    }
 }

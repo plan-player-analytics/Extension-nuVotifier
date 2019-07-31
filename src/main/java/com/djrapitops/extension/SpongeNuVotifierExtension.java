@@ -23,29 +23,24 @@
 package com.djrapitops.extension;
 
 import com.djrapitops.plan.extension.DataExtension;
-
-import java.util.Optional;
+import com.djrapitops.plan.extension.annotation.PluginInfo;
+import com.djrapitops.plan.extension.icon.Color;
+import com.djrapitops.plan.extension.icon.Family;
 
 /**
- * Factory for DataExtension.
+ * nuVotifier DataExtension.
  *
  * @author Rsl1122
  */
-public class NewExtensionFactory {
+@PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
+public class SpongeNuVotifierExtension extends NuVotifierExtension implements DataExtension {
 
-    private boolean isAvailable() {
-        try {
-            Class.forName("");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+    SpongeNuVotifierExtension() {
+        this(new NuVotifierStorage());
     }
 
-    public Optional<DataExtension> createExtension() {
-        if (isAvailable()) {
-            return Optional.of(new NewExtension());
-        }
-        return Optional.empty();
+    private SpongeNuVotifierExtension(NuVotifierStorage storage) {
+        super(storage);
+        new SpongeVoteListener(storage).register();
     }
 }

@@ -28,16 +28,19 @@ import com.djrapitops.plan.extension.icon.Color;
 import com.djrapitops.plan.extension.icon.Family;
 
 /**
- * Template for new DataExtension.
+ * nuVotifier DataExtension.
  *
  * @author Rsl1122
  */
-@PluginInfo(name = "", iconName = "", iconFamily = Family.SOLID, color = Color.NONE)
-public class NewExtension implements DataExtension {
+@PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
+public class BungeeNuVotifierExtension extends NuVotifierExtension implements DataExtension {
 
-    public NewExtension() {
-        // TODO Add required API classes
+    BungeeNuVotifierExtension() {
+        this(new NuVotifierStorage());
     }
 
-    // TODO Add Provider methods
+    private BungeeNuVotifierExtension(NuVotifierStorage storage) {
+        super(storage);
+        new BungeeVoteListener(storage).register();
+    }
 }

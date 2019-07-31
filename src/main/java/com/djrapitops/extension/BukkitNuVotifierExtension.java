@@ -23,31 +23,24 @@
 package com.djrapitops.extension;
 
 import com.djrapitops.plan.extension.DataExtension;
-import com.djrapitops.plan.extension.extractor.ExtensionExtractor;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.djrapitops.plan.extension.annotation.PluginInfo;
+import com.djrapitops.plan.extension.icon.Color;
+import com.djrapitops.plan.extension.icon.Family;
 
 /**
- * Test for the implementation of the new extension
+ * nuVotifier DataExtension.
  *
  * @author Rsl1122
  */
-class ExtensionImplementationTest {
+@PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
+public class BukkitNuVotifierExtension extends NuVotifierExtension implements DataExtension {
 
-    private ExtensionExtractor extractor;
-
-    @BeforeEach
-    void prepareExtractor() {
-        DataExtension extension = new NuVotifierExtension(null) {
-        };
-        extractor = new ExtensionExtractor(extension);
+    BukkitNuVotifierExtension() {
+        this(new NuVotifierStorage());
     }
 
-    @Test
-    @DisplayName("API is implemented correctly")
-    void noImplementationErrors() {
-        extractor.validateAnnotations();
+    private BukkitNuVotifierExtension(NuVotifierStorage storage) {
+        super(storage);
+        new BukkitVoteListener(storage).register();
     }
-
 }
