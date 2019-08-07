@@ -22,6 +22,7 @@
 */
 package com.djrapitops.extension;
 
+import com.djrapitops.plan.extension.CallEvents;
 import com.djrapitops.plan.extension.DataExtension;
 import com.djrapitops.plan.extension.annotation.NumberProvider;
 import com.djrapitops.plan.extension.annotation.TableProvider;
@@ -37,6 +38,15 @@ public abstract class NuVotifierExtension implements DataExtension {
 
     NuVotifierExtension(NuVotifierStorage storage) {
         this.storage = storage;
+    }
+
+    @Override
+    public CallEvents[] callExtensionMethodsOn() {
+        return new CallEvents[]{
+                CallEvents.PLAYER_JOIN,
+                CallEvents.PLAYER_LEAVE,
+                CallEvents.SERVER_PERIODICAL
+        };
     }
 
     @NumberProvider(
