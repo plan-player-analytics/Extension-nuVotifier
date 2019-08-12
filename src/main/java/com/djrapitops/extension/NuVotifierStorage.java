@@ -73,7 +73,7 @@ public class NuVotifierStorage {
                 .fetchNameOf(playerUUID);
         if (!userName.isPresent()) return;
         queryService.execute(
-                "REMOVE FROM plan_votes WHERE user_name=?",
+                "DELETE FROM plan_votes WHERE user_name=?",
                 statement -> {
                     statement.setString(1, userName.get());
                     statement.execute();
