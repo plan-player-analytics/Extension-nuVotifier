@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (Rsl1122)
+    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
 
     The MIT License(MIT)
 
@@ -30,7 +30,7 @@ import com.djrapitops.plan.extension.icon.Family;
 /**
  * nuVotifier DataExtension.
  *
- * @author Rsl1122
+ * @author AuroraLS3
  */
 @PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
 public class SpongeNuVotifierExtension extends NuVotifierExtension implements DataExtension {
