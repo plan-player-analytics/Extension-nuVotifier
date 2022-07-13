@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,50 +20,44 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
+import com.djrapitops.plan.settings.ListenerService;
+import com.djrapitops.plan.settings.SchedulerService;
+import com.vexsoftware.votifier.bungee.events.VotifierEvent;
 import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.sponge.event.VotifierEvent;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
-import org.spongepowered.api.plugin.PluginContainer;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.util.concurrent.ExecutionException;
 
-public class SpongeVoteListener {
+public class BungeeVoteListener implements Listener {
 
     private final NuVotifierStorage storage;
 
-    private final PluginContainer plugin;
-
-    SpongeVoteListener(
+    BungeeVoteListener(
             NuVotifierStorage storage
     ) {
         this.storage = storage;
-        plugin = Sponge.getPluginManager().getPlugin("Plan")
-                .orElseThrow(IllegalStateException::new);
     }
 
     public void register() {
-        Sponge.getGame().getEventManager().registerListeners(plugin, this);
+        ListenerService.getInstance().registerListenerForPlan(this);
     }
 
-    @Listener(order = Order.LAST)
-    public void onJoin(VotifierEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onVote(VotifierEvent event) {
         Vote vote = event.getVote();
         String service = vote.getServiceName();
         String username = vote.getUsername();
 
-        Sponge.getGame().getScheduler().createTaskBuilder()
-                .async()
-                .execute(() -> {
-                    try {
-                        storage.storeVote(username, service);
-                    } catch (ExecutionException ignored) {
-                        // Ignore
-                    }
-                })
-                .submit(plugin);
+        SchedulerService.getInstance().runAsync(() -> {
+            try {
+                storage.storeVote(username, service);
+            } catch (ExecutionException ignored) {
+                // Ignore
+            }
+        });
     }
 }

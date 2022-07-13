@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,15 +20,15 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
+import com.djrapitops.plan.settings.ListenerService;
+import com.djrapitops.plan.settings.SchedulerService;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.ExecutionException;
 
@@ -36,17 +36,14 @@ public class BukkitVoteListener implements Listener {
 
     private final NuVotifierStorage storage;
 
-    private final Plugin plugin;
-
     BukkitVoteListener(
             NuVotifierStorage storage
     ) {
         this.storage = storage;
-        plugin = Bukkit.getPluginManager().getPlugin("Plan");
     }
 
     public void register() {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        ListenerService.getInstance().registerListenerForPlan(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -55,7 +52,7 @@ public class BukkitVoteListener implements Listener {
         String service = vote.getServiceName();
         String username = vote.getUsername();
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        SchedulerService.getInstance().runAsync(() -> {
             try {
                 storage.storeVote(username, service);
             } catch (ExecutionException ignored) {

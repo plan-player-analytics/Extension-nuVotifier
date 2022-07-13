@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,27 +20,49 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
 import com.djrapitops.plan.extension.DataExtension;
-import com.djrapitops.plan.extension.annotation.PluginInfo;
-import com.djrapitops.plan.extension.icon.Color;
-import com.djrapitops.plan.extension.icon.Family;
+
+import java.util.Optional;
 
 /**
- * nuVotifier DataExtension.
+ * Factory for DataExtension.
  *
  * @author AuroraLS3
  */
-@PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
-public class SpongeNuVotifierExtension extends NuVotifierExtension implements DataExtension {
+public class NuVotifierExtensionFactory {
 
-    SpongeNuVotifierExtension() {
-        this(new NuVotifierStorage());
+    private boolean isAvailable(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
-    private SpongeNuVotifierExtension(NuVotifierStorage storage) {
-        super(storage);
-        new SpongeVoteListener(storage).register();
+    public Optional<DataExtension> createExtension() {
+        if (!isAvailable("com.vexsoftware.votifier.model.Vote")) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.ofNullable(createNewExtension());
+        } catch (IllegalStateException noSponge) {
+            return Optional.empty();
+        }
+    }
+
+    private DataExtension createNewExtension() {
+        if (isAvailable("org.bukkit.event.EventHandler")) {
+            return new BukkitNuVotifierExtension();
+        }
+        if (isAvailable("net.md_5.bungee.event.EventHandler")) {
+            return new BungeeNuVotifierExtension();
+        }
+        if (isAvailable("org.spongepowered.api.event.Listener")) {
+            return new SpongeNuVotifierExtension();
+        }
+        return null;
     }
 }

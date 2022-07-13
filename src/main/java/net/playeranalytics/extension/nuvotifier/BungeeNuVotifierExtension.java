@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,7 +20,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
 import com.djrapitops.plan.extension.DataExtension;
 import com.djrapitops.plan.extension.annotation.PluginInfo;
@@ -33,14 +33,14 @@ import com.djrapitops.plan.extension.icon.Family;
  * @author AuroraLS3
  */
 @PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
-public class BukkitNuVotifierExtension extends NuVotifierExtension implements DataExtension {
+public class BungeeNuVotifierExtension extends NuVotifierExtension implements DataExtension {
 
-    BukkitNuVotifierExtension() {
+    BungeeNuVotifierExtension() {
         this(new NuVotifierStorage());
     }
 
-    private BukkitNuVotifierExtension(NuVotifierStorage storage) {
+    private BungeeNuVotifierExtension(NuVotifierStorage storage) {
         super(storage);
-        new BukkitVoteListener(storage).register();
+        new BungeeVoteListener(storage).register();
     }
 }

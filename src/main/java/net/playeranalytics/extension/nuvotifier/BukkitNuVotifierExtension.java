@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,49 +20,27 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
 import com.djrapitops.plan.extension.DataExtension;
-
-import java.util.Optional;
+import com.djrapitops.plan.extension.annotation.PluginInfo;
+import com.djrapitops.plan.extension.icon.Color;
+import com.djrapitops.plan.extension.icon.Family;
 
 /**
- * Factory for DataExtension.
+ * nuVotifier DataExtension.
  *
  * @author AuroraLS3
  */
-public class NuVotifierExtensionFactory {
+@PluginInfo(name = "nuVotifier", iconName = "vote-yea", iconFamily = Family.SOLID, color = Color.TEAL)
+public class BukkitNuVotifierExtension extends NuVotifierExtension implements DataExtension {
 
-    private boolean isAvailable(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+    BukkitNuVotifierExtension() {
+        this(new NuVotifierStorage());
     }
 
-    public Optional<DataExtension> createExtension() {
-        if (!isAvailable("com.vexsoftware.votifier.model.Vote")) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.ofNullable(createNewExtension());
-        } catch (IllegalStateException noSponge) {
-            return Optional.empty();
-        }
-    }
-
-    private DataExtension createNewExtension() {
-        if (isAvailable("org.bukkit.event.EventHandler")) {
-            return new BukkitNuVotifierExtension();
-        }
-        if (isAvailable("net.md_5.bungee.event.EventHandler")) {
-            return new BungeeNuVotifierExtension();
-        }
-        if (isAvailable("org.spongepowered.api.event.Listener")) {
-            return new SpongeNuVotifierExtension();
-        }
-        return null;
+    private BukkitNuVotifierExtension(NuVotifierStorage storage) {
+        super(storage);
+        new BukkitVoteListener(storage).register();
     }
 }

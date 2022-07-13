@@ -1,5 +1,5 @@
 /*
-    Copyright(c) 2019 Risto Lahtela (AuroraLS3)
+    Copyright(c) 2019 AuroraLS3
 
     The MIT License(MIT)
 
@@ -20,44 +20,38 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 */
-package com.djrapitops.extension;
+package net.playeranalytics.extension.nuvotifier;
 
-import com.vexsoftware.votifier.bungee.events.VotifierEvent;
+import com.djrapitops.plan.settings.ListenerService;
+import com.djrapitops.plan.settings.SchedulerService;
 import com.vexsoftware.votifier.model.Vote;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.event.EventPriority;
+import com.vexsoftware.votifier.sponge.event.VotifierEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 
 import java.util.concurrent.ExecutionException;
 
-public class BungeeVoteListener implements Listener {
+public class SpongeVoteListener {
 
     private final NuVotifierStorage storage;
 
-    private final Plugin plugin;
-
-    BungeeVoteListener(
+    SpongeVoteListener(
             NuVotifierStorage storage
     ) {
         this.storage = storage;
-        plugin = ProxyServer.getInstance()
-                .getPluginManager().getPlugin("Plan");
     }
 
     public void register() {
-        ProxyServer.getInstance()
-                .getPluginManager().registerListener(plugin, this);
+        ListenerService.getInstance().registerListenerForPlan(this);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onVote(VotifierEvent event) {
+    @Listener(order = Order.LAST)
+    public void onJoin(VotifierEvent event) {
         Vote vote = event.getVote();
         String service = vote.getServiceName();
         String username = vote.getUsername();
 
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, () -> {
+        SchedulerService.getInstance().runAsync(() -> {
             try {
                 storage.storeVote(username, service);
             } catch (ExecutionException ignored) {
